@@ -1,0 +1,40 @@
+name: Continuos Integration
+on:
+  workflow_dispatch:
+    secrets:
+      WECARE_SERVER_REPOSITORY:
+        required: true
+      WECARE_SERVER_REPOSITORY_SSH_KEY:
+        required: true
+    inputs:
+      branch:
+        description: Branch name to build
+        type: string
+        required: true
+        default: "main"
+    
+jobs:
+
+  checkout:
+    name: Checkout & checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up ssh agent
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
+      - name: Checkout code
+        shell: bash
+        run: |
+          eval $(ssh-agent -s)
+          echo "${{ secrets.BRAINY_SERVER_REPOSITORY_SSH_KEY }}" |  ssh-add -
+          git clone ${{ secrets.BRAINY_SERVER_REPOSITORY }} .
+          git checkout ${{ inputs.branch }}
+          make clone_thirdparty_libs
+      - name: Saving verified code
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-verified-code
+          path: ./
+          retention-days: 1

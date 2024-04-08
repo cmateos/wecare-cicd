@@ -30,5 +30,7 @@ jobs:
           echo "Running Checkout code"
           eval $(ssh-agent -s)
           echo "${{ secrets.WECARE_SERVER_REPOSITORY_SSH_KEY }}" |  ssh-add -
+          echo ${{ secrets.WECARE_SERVER_REPOSITORY }}
+          echo ${{ inputs.branch }}
           git clone ${{ secrets.WECARE_SERVER_REPOSITORY }} .
           git checkout ${{ inputs.branch }}

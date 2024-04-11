@@ -19,12 +19,6 @@ jobs:
     name: Checkout & checks
     runs-on: ubuntu-latest
     steps:
-      - name: Install node & obfuscator
-        uses: actions/setup-node@v4
-        with:
-          node-version: 21.5.0
-          cache: 'npm'
-      - run: npm install -g javascript-obfuscator
       - name: Set up ssh agent
         shell: bash
         run: |
@@ -40,3 +34,8 @@ jobs:
           echo ${{ inputs.branch }}
           git clone ${{ secrets.WECARE_SERVER_REPOSITORY }} .
           git checkout ${{ inputs.branch }}
+      - name: Build code
+        shell: bash
+        run: |
+          mvn clean
+          mvn package -DskipTests=true

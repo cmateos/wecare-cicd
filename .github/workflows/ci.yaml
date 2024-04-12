@@ -33,12 +33,14 @@ jobs:
       - name: Checkout code
         shell: bash
         run: |
+          apt install powershell
           echo "Running Checkout code"
           eval $(ssh-agent -s)
           echo "${{ secrets.WECARE_SERVER_REPOSITORY_SSH_KEY }}" |  ssh-add -
           echo ${{ secrets.WECARE_SERVER_REPOSITORY }}
           echo ${{ inputs.branch }}
-          git clone ${{ secrets.WECARE_SERVER_REPOSITORY }} .
+          git clone ${{ secrets.WECARE_SERVER_REPOSITORY }} lender
+          cd lender
           git checkout ${{ inputs.branch }}
       - uses: actions/setup-java@v4
         with:
@@ -48,4 +50,4 @@ jobs:
       - name: Build with Maven
         run: |
           mvn clean
-          mvn package -DskipTests=true
+          mvn package -Dgithub.workspace=${{ github.workspace }} -DskipTests=true

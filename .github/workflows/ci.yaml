@@ -49,7 +49,7 @@ jobs:
           cache: 'maven'
       - name: Build with Maven
         run: |
+          ls ${{ github.workspace }}
           cd ${{ github.workspace }}/lender
-          ls .
           mvn clean
           mvn package -Dgithub.workspace=${{ github.workspace }} -DskipTests=true

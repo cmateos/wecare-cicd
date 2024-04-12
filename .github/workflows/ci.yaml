@@ -42,7 +42,6 @@ jobs:
           git clone ${{ secrets.WECARE_SERVER_REPOSITORY }} lender
           cd lender
           git checkout ${{ inputs.branch }}
-          pwd
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -50,6 +49,7 @@ jobs:
           cache: 'maven'
       - name: Build with Maven
         run: |
-          pwd
+          cd ${{ github.workspace }}/lender
+          ls .
           mvn clean
           mvn package -Dgithub.workspace=${{ github.workspace }} -DskipTests=true

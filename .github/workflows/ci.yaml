@@ -29,6 +29,8 @@ jobs:
       - name: Check JS obfuscator
         shell: bash
         run: |
+          echo ${{ github.workspace }}
+          echo $GITHUB_WORKSPACE
           javascript-obfuscator --version
       - name: Checkout code
         shell: bash

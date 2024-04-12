@@ -42,6 +42,7 @@ jobs:
           git clone ${{ secrets.WECARE_SERVER_REPOSITORY }} lender
           cd lender
           git checkout ${{ inputs.branch }}
+          pwd
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'

@@ -24,6 +24,12 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
+      - name: Checkout GH repo
+        uses: actions/checkout@v4.1.1
+      - name: Check JS obfuscator
+        shell: bash
+        run: |
+          javascript-obfuscator --version
       - name: Checkout code
         shell: bash
         run: |
@@ -34,7 +40,6 @@ jobs:
           echo ${{ inputs.branch }}
           git clone ${{ secrets.WECARE_SERVER_REPOSITORY }} .
           git checkout ${{ inputs.branch }}
-
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'

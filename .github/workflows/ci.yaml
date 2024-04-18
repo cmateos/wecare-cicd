@@ -6,6 +6,10 @@ on:
         required: true
       WECARE_SERVER_REPOSITORY_SSH_KEY:
         required: true
+      OCI_SSH_KEY:
+        required: true
+      OCI_SCP_JAR_PATH:
+        required: true
     inputs:
       branch:
         description: Branch name to build
@@ -49,7 +53,11 @@ jobs:
           cache: 'maven'
       - name: Build with Maven
         run: |
-          ls ${{ github.workspace }}
           cd ${{ github.workspace }}/lender
           mvn clean
           mvn package -Dgithub.workspace=${{ github.workspace }} -DskipTests=true
+      - name: Deploy to Cloud
+        run: |
+          cd ${{ github.workspace }}/lender
+          echo ${{ secrets.OCI_SSH_KEY }} > ./id_rsa
+          scp -i ./id_rsa ${{ secrets.OCI_SCP_JAR_PATH }}/target/lender-0.0.1-SNAPSHOT.jar

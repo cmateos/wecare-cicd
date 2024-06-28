@@ -71,5 +71,5 @@ jobs:
         run: |
           eval $(ssh-agent -s)
           echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
-          active=$(ssh ${{ secrets.OCI_VM_IP }} "sudo systemctl is-active insurance-bundle")
+          active=$(ssh opc@${{ secrets.OCI_VM_IP }} "sudo systemctl is-active insurance-bundle")
           echo $active

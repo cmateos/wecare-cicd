@@ -69,5 +69,7 @@ jobs:
           echo "Done deploying jar file."
       - name: Check wecare service
         run: |
+          eval $(ssh-agent -s)
+          echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
           active=$(ssh ${{ secrets.OCI_VM_IP }} "sudo systemctl is-active insurance-bundle")
           echo $active

@@ -73,4 +73,4 @@ jobs:
           echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
           sleep 60
           export ACTIVE=$(ssh opc@129.146.167.235 "sudo systemctl is-active insurance-bundle")
-          if [ "$ACTIVE" -eq "active" ]; then exit 1; fi
+          if [ "$ACTIVE" == "active" ]; then exit 1; fi

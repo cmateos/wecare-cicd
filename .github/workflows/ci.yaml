@@ -67,3 +67,7 @@ jobs:
           echo "Deploying jar file..."
           scp target/lender-0.0.1-SNAPSHOT.jar ${{ secrets.OCI_SCP_JAR_PATH }}
           echo "Done deploying jar file."
+      - name: Check wecare service
+        run: |
+          active=$(ssh ${{ secrets.OCI_VM_IP }} "sudo systemctl is-active insurance-bundle")
+          echo $active

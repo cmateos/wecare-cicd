@@ -71,7 +71,6 @@ jobs:
         run: |
           eval $(ssh-agent -s)
           echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
-          export ACTIVE=$(ssh opc@129.146.167.235 "sudo systemctl is-active insurance-bundle")
-          echo $active
           sleep 60
-          echo $active
+          export ACTIVE=$(ssh opc@129.146.167.235 "sudo systemctl is-active insurance-bundle")
+          if [ "$ACTIVE" -eq "active" ]; then exit 1; fi

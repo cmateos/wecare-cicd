@@ -12,6 +12,8 @@ on:
         required: true
       OCI_VM_IP:
         required: true
+      OCI_USER_VM_IP:
+        required: true
     inputs:
       branch:
         description: Branch name to build
@@ -72,5 +74,6 @@ jobs:
           eval $(ssh-agent -s)
           echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
           sleep 60
-          export ACTIVE=$(ssh opc@129.146.167.235 "sudo systemctl is-active insurance-bundle")
+          export ACCOUNT=${{ OCI_USER_VM_IP }}
+          export ACTIVE=$(ssh $ACCOUNT "sudo systemctl is-active insurance-bundle")
           if [ "$ACTIVE" == "active" ]; then exit 1; fi

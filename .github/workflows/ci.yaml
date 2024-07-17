@@ -73,7 +73,7 @@ jobs:
         run: |
           eval $(ssh-agent -s)
           echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
-          sleep 30
+          sleep 40
           export ACCOUNT=${{ secrets.OCI_USERNAME_VM_IP }}
           export ACTIVE=$(ssh $ACCOUNT "sudo systemctl is-active insurance-bundle")
           if [ "$ACTIVE" != "active" ]; then exit 1; fi

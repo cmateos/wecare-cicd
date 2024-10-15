@@ -42,7 +42,8 @@ jobs:
       - name: Checkout code
         shell: bash
         run: |
-          sudo apt install powershell
+          #sudo apt install powershell
+          sudo snap install powershell
           echo "Running Checkout code"
           eval $(ssh-agent -s)
           echo "${{ secrets.WECARE_SERVER_REPOSITORY_SSH_KEY }}" |  ssh-add -

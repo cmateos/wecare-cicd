@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           #sudo apt install powershell
-          sudo snap install powershell
+          sudo snap install powershell --classic
           echo "Running Checkout code"
           eval $(ssh-agent -s)
           echo "${{ secrets.WECARE_SERVER_REPOSITORY_SSH_KEY }}" |  ssh-add -

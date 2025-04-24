@@ -19,7 +19,7 @@ on:
         description: Branch name to build
         type: string
         required: true
-        default: "testing_environment"
+        default: "main"
     
 jobs:
 

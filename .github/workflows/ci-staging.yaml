@@ -1,1 +1,80 @@
+name: Continuous Integration (staging)
+on:
+  workflow_dispatch:
+    secrets:
+      WECARE_SERVER_REPOSITORY:
+        required: true
+      WECARE_SERVER_REPOSITORY_SSH_KEY:
+        required: true
+      OCI_SSH_KEY:
+        required: true
+      OCI_STAGING_SCP_JAR_PATH:
+        required: true
+      OCI_STAGING_VM_IP:
+        required: true
+      OCI_USERNAME_STAGING_VM_IP:
+        required: true
+    inputs:
+      branch:
+        description: Branch name to build
+        type: string
+        required: true
+        default: "staging"
+    
+jobs:
 
+  checkout:
+    name: Checkout & checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up ssh agent
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.OCI_STAGING_VM_IP }} >> ~/.ssh/known_hosts
+      - name: Checkout GH repo
+        uses: actions/checkout@v4.1.1
+      - name: Check JS obfuscator
+        shell: bash
+        run: |
+          ${{ github.workspace }}/javascript-obfuscator --version
+      - name: Checkout code
+        shell: bash
+        run: |
+          #sudo apt install powershell
+          sudo snap install powershell --classic
+          echo "Running Checkout code"
+          eval $(ssh-agent -s)
+          echo "${{ secrets.WECARE_SERVER_REPOSITORY_SSH_KEY }}" |  ssh-add -
+          echo ${{ secrets.WECARE_SERVER_REPOSITORY }}
+          echo ${{ inputs.branch }}
+          git clone ${{ secrets.WECARE_SERVER_REPOSITORY }} lender
+          cd lender
+          git checkout ${{ inputs.branch }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+      - name: Build with Maven
+        run: |
+          cd ${{ github.workspace }}/lender
+          mvn clean
+          mvn package -Dgithub.workspace=${{ github.workspace }} -DskipTests=true
+      - name: Deploy to Cloud
+        run: |
+          cd ${{ github.workspace }}/lender
+          eval $(ssh-agent -s)
+          echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
+          echo "Deploying jar file..."
+          scp target/lender-0.0.1-SNAPSHOT.jar ${{ secrets.OCI_STAGING_SCP_JAR_PATH }}
+          echo "Done deploying jar file."
+      - name: Check wecare service
+        run: |
+          eval $(ssh-agent -s)
+          echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
+          sleep 40
+          export ACCOUNT=${{ secrets.OCI_USERNAME_STAGING_VM_IP }}
+          export ACTIVE=$(ssh $ACCOUNT "sudo systemctl is-active insurance-bundle")
+          if [ "$ACTIVE" != "active" ]; then exit 1; fi

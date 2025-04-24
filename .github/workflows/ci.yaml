@@ -39,6 +39,7 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
           export BRANCH=${{ inputs.branch }}
+          echo "Working branch: $BRANCH"
           export VM_IP=${{ secrets.OCI_STAGING_VM_IP }}
           if [ "$BRANCH" == "master" ]; then export VM_IP=${{ secrets.OCI_VM_IP }}; fi
           ssh-keyscan -H $VM_IP >> ~/.ssh/known_hosts

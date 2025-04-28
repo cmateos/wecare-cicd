@@ -45,10 +45,6 @@ jobs:
           ssh-keyscan -H $VM_IP >> ~/.ssh/known_hosts
       - name: Checkout GH repo
         uses: actions/checkout@v4.1.1
-      - name: Check JS obfuscator
-        shell: bash
-        run: |
-          ${{ github.workspace }}/javascript-obfuscator --version
       - name: Checkout code
         shell: bash
         run: |

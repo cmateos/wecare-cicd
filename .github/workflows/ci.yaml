@@ -20,6 +20,10 @@ on:
         required: true
       OCI_USERNAME_STAGING_VM_IP:
         required: true
+      OCI_CHECK_ACTIVE_URL:
+        required: true
+      OCI_STAGING_CHECK_ACTIVE_URL:
+        required: true
     inputs:
       branch:
         description: Branch name to build
@@ -49,7 +53,7 @@ jobs:
         shell: bash
         run: |
           #sudo apt install powershell
-          sudo snap install powershell --classic
+          #sudo snap install powershell --classic
           echo "Running Checkout code"
           eval $(ssh-agent -s)
           echo "${{ secrets.WECARE_SERVER_REPOSITORY_SSH_KEY }}" |  ssh-add -
@@ -81,11 +85,17 @@ jobs:
           echo "Done deploying jar file."
       - name: Check wecare service
         run: |
-          eval $(ssh-agent -s)
-          echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
-          sleep 40
           export BRANCH=${{ inputs.branch }}
-          export ACCOUNT=${{ secrets.OCI_USERNAME_STAGING_VM_IP }}
-          if [ "$BRANCH" == "master" ]; then export ACCOUNT=${{ secrets.OCI_USERNAME_VM_IP }}; fi
-          export ACTIVE=$(ssh $ACCOUNT "sudo systemctl is-active insurance-bundle")
-          if [ "$ACTIVE" != "active" ]; then exit 1; fi
+          export CHECK_URL=${{ secrets.OCI_STAGING_CHECK_ACTIVE_URL }}
+          if [ "$BRANCH" == "master" ]; then export CHECK_URL=${{ secrets.OCI_CHECK_ACTIVE_URL }}; fi
+          export ACTIVE=$(wget --tries=12 --timeout=5 --server-response --spider $CHECK_URL 2>&1 | grep "200 OK" | wc -l)
+          if [ "$ACTIVE" != "1" ]; then exit 1; fi
+
+          #eval $(ssh-agent -s)
+          #echo "${{ secrets.OCI_SSH_KEY }}"  |  ssh-add -
+          #sleep 40
+          #export BRANCH=${{ inputs.branch }}
+          #export ACCOUNT=${{ secrets.OCI_USERNAME_STAGING_VM_IP }}
+          #if [ "$BRANCH" == "master" ]; then export ACCOUNT=${{ secrets.OCI_USERNAME_VM_IP }}; fi
+          #export ACTIVE=$(ssh $ACCOUNT "sudo systemctl is-active insurance-bundle")
+          #if [ "$ACTIVE" != "active" ]; then exit 1; fi

@@ -85,6 +85,7 @@ jobs:
           echo "Done deploying jar file."
       - name: Check wecare service
         run: |
+          sudo apt install wget
           export BRANCH=${{ inputs.branch }}
           export CHECK_URL=${{ secrets.OCI_STAGING_CHECK_ACTIVE_URL }}
           if [ "$BRANCH" == "master" ]; then export CHECK_URL=${{ secrets.OCI_CHECK_ACTIVE_URL }}; fi

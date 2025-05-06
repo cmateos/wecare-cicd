@@ -86,13 +86,9 @@ jobs:
       - name: Check wecare service
         run: |
           sudo apt install wget
-          echo "First."
           export BRANCH=${{ inputs.branch }}
-          echo "Second."
           export CHECK_URL=${{ secrets.OCI_STAGING_CHECK_ACTIVE_URL }}
-          echo "Third."
           if [ "$BRANCH" == "master" ]; then export CHECK_URL=${{ secrets.OCI_CHECK_ACTIVE_URL }}; fi
-          echo "Fourth."
-          export ACTIVE=$(wget --tries=12 --timeout=5 --server-response --spider $CHECK_URL 2>&1 | grep "200 OK" | wc -l)
-          echo "Fifth."
+          i=0; until [ "$i" -ge 6 ] || [ $(wget --server-response --spider $CHECK_URL 2>&1 | grep "200 OK" | wc -l) = "1" ]; do i=$((i+1)); echo "intento $i"; sleep 10; done
+          export ACTIVE=$(wget --server-response --spider $CHECK_URL 2>&1 | grep "200 OK" | wc -l)
           if [ "$ACTIVE" != "1" ]; then exit 1; fi

@@ -89,6 +89,6 @@ jobs:
           export BRANCH=${{ inputs.branch }}
           export CHECK_URL=${{ secrets.OCI_STAGING_CHECK_ACTIVE_URL }}
           if [ "$BRANCH" == "master" ]; then export CHECK_URL=${{ secrets.OCI_CHECK_ACTIVE_URL }}; fi
-          i=0; until [ "$i" -ge 15 ] || [ $(wget --no-check-certificate --server-response --spider $CHECK_URL 2>&1 | grep "200 OK" | wc -l) = "1" ]; do i=$((i+1)); echo "Attempt $i"; sleep 10; done
-          export ACTIVE=$(wget --no-check-certificate --server-response --spider $CHECK_URL 2>&1 | grep "200 OK" | wc -l)
+          i=0; until [ "$i" -ge 15 ] || [ $(wget --no-check-certificate --server-response --spider $CHECK_URL 2>&1 | grep "HTTP/.\+ 200" | wc -l) = "1" ]; do i=$((i+1)); echo "Attempt $i"; sleep 10; done
+          export ACTIVE=$(wget --no-check-certificate --server-response --spider $CHECK_URL 2>&1 | grep "HTTP/.\+ 200" | wc -l)
           if [ "$ACTIVE" != "1" ]; then exit 1; fi
